@@ -1,0 +1,28 @@
+  
+!include path/to/C4.puml
+!include path/to/C4_Context.puml
+!include path/to/C4_Container.puml
+!include path/to/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+@startuml
+title Level 1 Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_LEFT_RIGHT()
+
+Person(Student, "Student", "User of type Student")
+Person(Teacher, "Teacher", "User of type Teacher")
+
+System_Boundary(c1 , "Sample Systems"){
+Container(web_app, "Web Application", "JavaScript","Allows pairing of student and teacher based on skill. Provides scheduling platfrom between student and teacher.")
+}
+Container_Ext(googleContainer, "Google authenticator", "Technology", "Verifies authorization/token. Offer account security by providing two step verification. " )
+Container_Ext(emailContainer, "Email authenticator", "Software System", "Verifies authorization/token. Offer account security by providing two step verification. " )
+
+Rel(Student, web_app, "uses", "https")
+Rel(web_app, googleContainer, "uses" )
+Rel(emailContainer, Student, "Sends email to")
+Rel(emailContainer, Teacher, "Sends email to")
+Rel(Teacher, web_app, "uses", "https")
+
+@enduml

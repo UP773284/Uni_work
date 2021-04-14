@@ -1,0 +1,108 @@
+
+CREATE TABLE Staff (
+    StaffID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(500),
+    City VARCHAR(50),
+    Country VARCHAR(50),
+    ContactNumber integer NOT NULL
+)
+
+CREATE TABLE ApprovedProvider (
+    ProviderID SERIAL PRIMARY KEY,
+    [Type] VARCHAR(50) NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(500),
+    City VARCHAR(50),
+    Country VARCHAR(50),
+    StaffID integer NOT NULL,
+    CONSTRAINT ApprovedProvider_StaffID_fkey FOREIGN KEY(StaffID)
+        REFERENCES Staff(StaffID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+
+CREATE TABLE Volunteer (
+    VolunteerID SERIAL PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Birthday TIMESTAMP,
+    City VARCHAR(50)
+    Country VARCHAR(50)
+    ContactNumber INTEGER NOT NULL,
+    ProviderID INTEGER NOT NULL,
+    CONSTRAINT Volunteer_ProviderID_fkey FOREIGN KEY(ProviderID)
+        REFERENCES ApprovedProvider(ProviderID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION 
+)
+
+CREATE TABLE Skill (
+    SkillID SERIAL PRIMARY KEY,
+    Description VARCHAR(500)
+)
+
+CREATE TABLE VolunteerSkill (
+    VolunteerSkillID SERIAL PRIMARY KEY,
+    VolunteerID INTEGER,
+    SkillID INTEGER,
+    CONSTRAINT VolunteerSkill_VolunteerID_fkey FOREIGN KEY(VolunteerID)
+        REFERENCES Volunteer(VolunteerID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION ,
+    CONSTRAINT VolunteerSkill_SkillID_fkey FOREIGN KEY(SkillID)
+        REFERENCES Skill(SkillID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION 
+)
+
+CREATE TABLE VolunteerOrganisation (
+    OrganisationID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(500),
+    City VARCHAR(50),
+    Country VARCHAR(50),
+    ContactNumber INTEGER NOT NULL
+)
+
+CREATE TABLE VolunteerOrganisationSkill (
+    RequestID SERIAL PRIMARY KEY,
+    Date TIMESTAMP,
+    OrganisationID INTEGER NOT NULL,
+    VolunteerSkillID INTEGER NULL,
+    [Type] VARCHAR(50),
+    Fullfilled BIT,
+    CONSTRAINT VolunteerOrganisationSkill_OrganisationID_fkey FOREIGN KEY (OrganisationID)
+        REFERENCES VolunteerOrganisation(OrganisationID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION ,
+    CONSTRAINT VolunteerOrganisationSkill_VolunteerSkillID_fkey FOREIGN KEY (VolunteerSkillID)
+        REFERECENS VolunteerSkill(VolunteerSkillID) MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE NO ACTION 
+)
+
+
+SELECT Name, Birthday, Address
+FROM Volunteer
+WHERE Name LIKE '%Andrew%'
+
+SELECT DISTINCT Name, Birthday, Address
+FROM Volunteer
+
+SELECT *
+FROM VolunteerOrganisationSkill
+WHERE Fullfilled = 1
+
+SELECT A.Name, A.Address, S.Name AS StaffName, S.Address AS StaffAddress
+FROM ApprovedProvider A
+INNER JOIN Staff S ON A.StaffID = S.StaffID
+
+SELECT V.Name AS VolunteerName, S.Description AS SkillDescription
+FROM VolunteerSkill VS
+INNER JOIN Volunteer V ON V.VolunteerID = VS.VolunteerID
+INNER JOIN Skill S ON S.SkillID = VS.SkillID
+-- this is a comment
+
+
+-- Scenario 1
+SELECT V.Name, V.ContactNumber
+FROM Volunteer V
+JOIN VolunteerSkill VS ON V.VolunteerID = VS.VolunteerID
+INNER JOIN Skill S ON S.SkillID = VS.SkillID
+WHERE S.Description = ''
+
+

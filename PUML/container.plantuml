@@ -1,0 +1,41 @@
+@startuml
+title Level 3 c4 Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Container.puml
+
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+
+Person(Student, Student)
+Person(Teacher, Teacher)
+
+
+System_Boundary(c1, "Skill Finder") {
+
+    Container(app, "Web Application", "Javascript, NodesJS", "Shows available skills, shows information about teachers background relative to skill. Delivers teaching platform.")
+    Container(api, "API Application", "JSON", "Offers security, sign in, skill finder functionality. Provides functionality to access data.")
+    ContainerDb(database, "Database", "Oracle 12c", "Stores customer information, logs, credentials in an encrypted format.")
+
+}
+
+Rel(Student, app, "Uses", "HTTPS")
+Rel(Teacher, app, "Uses", "HTTPS")
+
+Rel_R(app, database, "Makes API calls to", "HTTPS")
+Rel(api, database, "Reads and writes data", "HTTPS")
+
+System_Ext(Email, "Email System", "Sends emails and notifications to student and teacher.")
+System_Ext(Authenticator, "Google authenticator", " Verfies authorization token/access.")
+
+Rel(Email, Student, "Sends email to")
+Rel(Email, Teacher, "Sends email t")
+Rel(api, Authenticator, "Makes API calls to", "HTTPS")
+Rel(api, Email, "Makes API calls to", "HTTPS")
+
+@enduml

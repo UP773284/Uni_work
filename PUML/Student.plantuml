@@ -1,0 +1,49 @@
+@startuml
+
+'!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!include <c4/C4_Component.puml>  
+
+
+LAYOUT_WITH_LEGEND()
+
+
+title API Application
+Person(student, "Student", Person)
+
+
+Container_Boundary(api, "C4 L3") {
+    Component(web_app, "Web App", "JavaScript", "Allows users to sign in to the system so they can view available data, hold lessons and make lesson requests.")
+    Component(sign_up, "Sign up","Software System","Allows users to register for an account, users can sign up with google, facebook or conventionally")
+    Component(featured, "Featured skill", "Software System","Shows featured skills, listing determined by uptake of skill interest")
+    Component(notification, "Community Guidline", "Software system","Provides users to alerts about newsletters, lesson updates and regulations.")
+    Component(security, "Security Component","Spring Bean", "Provides functionality linked with logging in, and resetting passwords.")
+    Component(search, "Search controller", "Software system","Allows users to search for skill by name or key words.")
+    Component(profile, "Profile component", "software system", "Allows users to view their profile and acheivements.")
+    Component(authentication, "Authentication Interface", "Spring beans","Provides means of authentication in relation to credentials.")
+    Component(scheduling, "Scheduling Component", "Software System" ,"Allows users to make make appointments based on availability, allows users to adjust timetable according to teaching schedule.")
+    Component(email, "Email_interface","Software System", "Allows exchange between student and teacher within the web app.")
+
+    Rel(web_app, sign_in, "Makes API calls to.")
+    Rel(web_app, notification, "Makes API calls to.")
+    Rel(web_app, profile, "Makes API calls to.")
+    Rel(web_app, scheduling, "USES")
+    Rel(sign_in, authentication, "USES")
+    Rel(notification, Email, "USES")
+    Rel(scheduling, notification, "USES")
+    Rel(profile, security, "USES") 
+    Rel(profile, notification, "USES")
+
+}
+
+ContainerDb(db, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+Rel(search, db, "USES")
+Rel(authentication,db, "Reads from and writes to.")
+
+System_Ext(google_authentication, "Google Authenticator", "Verifies authorization/token access.")
+Rel(authentication, google_authentication, "Uses")
+
+System_Ext(ext_email, "Email system", "Sends notifications and lesson updates.")
+Rel(notification, ext_email, "USES")
+
+
+@enduml

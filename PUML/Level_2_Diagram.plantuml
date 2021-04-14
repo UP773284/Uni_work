@@ -1,0 +1,40 @@
+@startuml
+title Level 2 c4 Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+' !include C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+
+LAYOUT_WITH_LEGEND()
+
+
+Person(Student, "Student", Person)
+Person(Teacher, "Teacher",Person)
+
+
+System_Boundary(c1, "Skill Finder") {
+
+    Container(app, "Web Application", "Javascript, NodesJS", "Shows available skills, shows information about teachers background relative to skill. Delivers teaching platform.")
+    Container(api, "API Application", "Java", "Offers security, sign in, skill finder functionality. Provides functionality to access data.")
+    ContainerDb(database, "Database", "PostgreSQL", "Stores customer information, logs, credentials in an encrypted format.")
+
+}
+
+Rel_D(Student, app, "Uses","HTTPS")
+Rel_D(Teacher, app, "Uses", "HTTPS")
+
+Rel_D(app, database, "Makes API calls to", "HTTPS")
+Rel_D(api, database, "Reads and writes data", "HTTPS")
+
+System_Ext(Email_student, "Email System", "Sends emails and notifications to student and teacher.")
+System_Ext(Authenticator, "Google authenticator", " Verfies authorization token/access.")
+System_Ext(Email_teacher, "Email System", "Sends emails and notifications to student and teacher.")
+
+Rel_U(Email_student, Student, "Sends email to")
+Rel_U(Email_teacher, Teacher, "Sends email to")
+Rel_D(api, Authenticator, "Makes API calls to", "HTTPS")
+'Rel(api, Email, "Makes API calls to", "HTTPS")
+
+@enduml
